@@ -1,18 +1,6 @@
 """Tuya PIR motion sensor."""
 
 import zigpy.types as t
-from zigpy.profiles import zha
-from zigpy.zcl.clusters.general import (
-    Basic,
-    Identify,
-    OnOff,
-    Ota,
-    PowerConfiguration,
-    Time,
-)
-from zigpy.zcl.clusters.lightlink import LightLink
-from zigpy.zcl.clusters.security import IasZone
-
 from zhaquirks import PowerConfigurationCluster
 from zhaquirks.const import (
     DEVICE_TYPE,
@@ -23,7 +11,18 @@ from zhaquirks.const import (
     PROFILE_ID,
 )
 from zhaquirks.tuya import TuyaLocalCluster
-from zhaquirks.tuya.mcu import EnchantedDevice
+from zigpy.profiles import zha
+from zigpy.quirks import CustomCluster
+from zigpy.zcl.clusters.general import (
+    Basic,
+    Identify,
+    OnOff,
+    Ota,
+    PowerConfiguration,
+    Time,
+)
+from zigpy.zcl.clusters.lightlink import LightLink
+from zigpy.zcl.clusters.security import IasZone
 
 
 class SensitivityLevel(t.enum8):
@@ -58,7 +57,7 @@ class TuyaPowerConfiguration(PowerConfigurationCluster):
     MAX_VOLTS = 3.2
 
 
-class TuyaPowerBatteryConfigurationCluster(TuyaPowerConfiguration, TuyaLocalCluster):
+class TuyaBatteryConfiguration(TuyaPowerConfiguration, TuyaLocalCluster):
     """PowerConfiguration cluster for device"""
 
     BATTERY_SIZES = 0x0031
@@ -70,7 +69,7 @@ class TuyaPowerBatteryConfigurationCluster(TuyaPowerConfiguration, TuyaLocalClus
     }
 
 
-class PirMotion(EnchantedDevice):
+class PirMotion(CustomCluster):
     """Tuya PIR motion sensor."""
 
     signature = {
@@ -106,7 +105,7 @@ class PirMotion(EnchantedDevice):
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
                     Identify.cluster_id,
-                    TuyaPowerBatteryConfigurationCluster,
+                    TuyaBatteryConfiguration,
                     PirSensor,
                 ],
                 OUTPUT_CLUSTERS: [

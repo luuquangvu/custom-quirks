@@ -4,12 +4,6 @@ import math
 from typing import Dict
 
 import zigpy.types as t
-from zigpy.profiles import zha
-from zigpy.zcl import foundation
-from zigpy.zcl.clusters.general import Basic, Ota, Time, PowerConfiguration
-from zigpy.zcl.clusters.measurement import IlluminanceMeasurement, OccupancySensing
-from zigpy.zcl.clusters.security import IasZone
-
 from zhaquirks import PowerConfigurationCluster
 from zhaquirks.const import (
     DEVICE_TYPE,
@@ -23,9 +17,14 @@ from zhaquirks.tuya import TuyaLocalCluster
 from zhaquirks.tuya.mcu import (
     DPToAttributeMapping,
     TuyaMCUCluster,
-    TuyaPowerConfigurationCluster,
-    EnchantedDevice
+    TuyaPowerConfigurationCluster
 )
+from zigpy.profiles import zha
+from zigpy.quirks import CustomCluster
+from zigpy.zcl import foundation
+from zigpy.zcl.clusters.general import Basic, Ota, Time, PowerConfiguration
+from zigpy.zcl.clusters.measurement import IlluminanceMeasurement, OccupancySensing
+from zigpy.zcl.clusters.security import IasZone
 
 
 class TuyaOccupancySensing(OccupancySensing, TuyaLocalCluster):
@@ -110,7 +109,7 @@ class TuyaPowerConfiguration(PowerConfigurationCluster):
     MAX_VOLTS = 3.2
 
 
-class TuyaPowerBatteryConfigurationCluster(TuyaPowerConfiguration, TuyaLocalCluster):
+class TuyaBatteryConfiguration(TuyaPowerConfiguration, TuyaLocalCluster):
     """PowerConfiguration cluster for device"""
 
     BATTERY_SIZES = 0x0031
@@ -122,7 +121,7 @@ class TuyaPowerBatteryConfigurationCluster(TuyaPowerConfiguration, TuyaLocalClus
     }
 
 
-class PirMotion(EnchantedDevice):
+class PirMotion(CustomCluster):
     """Tuya PIR motion sensor."""
 
     signature = {
@@ -154,7 +153,7 @@ class PirMotion(EnchantedDevice):
                 DEVICE_TYPE: zha.DeviceType.IAS_ZONE,
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
-                    TuyaPowerBatteryConfigurationCluster,
+                    TuyaBatteryConfiguration,
                     PirMotionManufCluster,
                     TuyaOccupancySensing,
                     TuyaIlluminanceMeasurement,
