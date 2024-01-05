@@ -20,7 +20,7 @@ from zhaquirks.tuya.mcu import (
     TuyaPowerConfigurationCluster
 )
 from zigpy.profiles import zha
-from zigpy.quirks import CustomCluster
+from zigpy.quirks import CustomDevice
 from zigpy.zcl import foundation
 from zigpy.zcl.clusters.general import Basic, Ota, Time, PowerConfiguration
 from zigpy.zcl.clusters.measurement import IlluminanceMeasurement, OccupancySensing
@@ -121,7 +121,7 @@ class TuyaBatteryConfiguration(TuyaPowerConfiguration, TuyaLocalCluster):
     }
 
 
-class PirMotion(CustomCluster):
+class PirMotion(CustomDevice):
     """Tuya PIR motion sensor."""
 
     signature = {
