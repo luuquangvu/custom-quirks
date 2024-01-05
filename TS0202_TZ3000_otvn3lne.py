@@ -54,8 +54,8 @@ class PirSensor(IasZone):
 class TuyaPowerConfiguration(PowerConfigurationCluster):
     """Common use power configuration cluster."""
 
-    MIN_VOLTS = 1.1
-    MAX_VOLTS = 1.4
+    MIN_VOLTS = 1.0  # NiMH, 1.1 for Alkaline
+    MAX_VOLTS = 1.4  # NiMH, 1.6 for Alkaline
 
 
 class TuyaPowerBatteryConfigurationCluster(TuyaPowerConfiguration, TuyaLocalCluster):
@@ -65,7 +65,7 @@ class TuyaPowerBatteryConfigurationCluster(TuyaPowerConfiguration, TuyaLocalClus
     BATTERY_QUANTITY = 0x0033
 
     _CONSTANT_ATTRIBUTES = {
-        BATTERY_SIZES: 4,  # NiMH HR03 AAA
+        BATTERY_SIZES: 4,  # AAA
         BATTERY_QUANTITY: 3,
     }
 
