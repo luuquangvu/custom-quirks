@@ -50,14 +50,7 @@ class PirSensor(IasZone):
     attributes.update({0xf001: ("on_time", OnTimeValues)})
 
 
-class TuyaPowerConfiguration(PowerConfigurationCluster):
-    """Common use power configuration cluster."""
-
-    MIN_VOLTS = 2.8
-    MAX_VOLTS = 3.2
-
-
-class TuyaBatteryConfiguration(TuyaPowerConfiguration, TuyaLocalCluster):
+class TuyaBatteryConfiguration(PowerConfigurationCluster, TuyaLocalCluster):
     """PowerConfiguration cluster for device"""
 
     BATTERY_SIZES = 0x0031
