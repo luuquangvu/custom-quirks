@@ -19,6 +19,9 @@ from zigpy.zcl.clusters.general import (
     Ota,
     PowerConfiguration,
     Time,
+    Groups,
+    Scenes,
+    LevelControl
 )
 from zigpy.zcl.clusters.lightlink import LightLink
 from zigpy.zcl.clusters.security import IasZone
@@ -52,7 +55,7 @@ class TuyaDoorSensor(CustomDevice):
         MODELS_INFO: [("_TZ3000_2mbfxlzr", "TS0203")],
         # endpoints=1 profile=260 device_type=0x0402
         # in_clusters=[0x0000, 0x0001, 0x0003, 0x0500],
-        # out_clusters=[0x0006, 0x000a, 0x0019, 0x1000]
+        # out_clusters=[0x0003, 0x0004, 0x0005, 0x0006, 0x0008, 0x000a, 0x0019, 0x1000]
         ENDPOINTS: {
             1: {
                 PROFILE_ID: zha.PROFILE_ID,
@@ -64,7 +67,11 @@ class TuyaDoorSensor(CustomDevice):
                     IasZone.cluster_id,
                 ],
                 OUTPUT_CLUSTERS: [
+                    Identify.cluster_id,
+                    Groups.cluster_id,
+                    Scenes.cluster_id,
                     OnOff.cluster_id,
+                    LevelControl.cluster_id,
                     Time.cluster_id,
                     Ota.cluster_id,
                     LightLink.cluster_id,
@@ -85,7 +92,11 @@ class TuyaDoorSensor(CustomDevice):
                     IasZone.cluster_id,
                 ],
                 OUTPUT_CLUSTERS: [
+                    Identify.cluster_id,
+                    Groups.cluster_id,
+                    Scenes.cluster_id,
                     OnOff.cluster_id,
+                    LevelControl.cluster_id,
                     Time.cluster_id,
                     Ota.cluster_id,
                     LightLink.cluster_id,
