@@ -62,12 +62,10 @@ class TuyaBatteryConfiguration(TuyaPowerConfiguration, TuyaLocalCluster):
 
     BATTERY_SIZES = 0x0031
     BATTERY_QUANTITY = 0x0033
-    BATTERY_RATED_VOLTAGE = 0x0034
 
     _CONSTANT_ATTRIBUTES = {
         BATTERY_SIZES: 4,  # AAA
         BATTERY_QUANTITY: 3,
-        BATTERY_RATED_VOLTAGE: 12,  # NiMH
     }
 
 
