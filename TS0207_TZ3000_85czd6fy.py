@@ -34,7 +34,7 @@ class TuyaBatteryConfiguration(PowerConfigurationCluster, TuyaLocalCluster):
     }
 
 
-class DoorSensor(CustomDevice):
+class MoistureSensor(CustomDevice):
     """Tuya PIR motion sensor."""
 
     signature = {
