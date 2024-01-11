@@ -121,7 +121,7 @@ class PirMotion(CustomDevice):
         MODELS_INFO: [("_TZE200_3towulqd", "TS0601")],
         ENDPOINTS: {
             # endpoints=1 profile=260 device_type=0x0402
-            # in_clusters=[0x0000, 0x0001, 0xef00, 0x0406, 0x0400],
+            # in_clusters=[0x0000, 0x0001, 0x0500],
             # out_clusters=[0x000a, 0x0019]
             1: {
                 PROFILE_ID: zha.PROFILE_ID,
@@ -129,7 +129,7 @@ class PirMotion(CustomDevice):
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
                     PowerConfiguration.cluster_id,
-                    TuyaManufCluster.cluster_id,
+                    IasZone.cluster_id,
                 ],
                 OUTPUT_CLUSTERS: [
                     Time.cluster_id,
