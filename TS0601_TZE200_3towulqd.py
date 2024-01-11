@@ -147,6 +147,8 @@ class PirMotion(CustomDevice):
                     Basic.cluster_id,
                     TuyaBatteryConfiguration,
                     PirMotionManufCluster,
+                    TuyaOccupancySensing,
+                    TuyaIlluminanceMeasurement,
                 ],
                 OUTPUT_CLUSTERS: [
                     Time.cluster_id,
