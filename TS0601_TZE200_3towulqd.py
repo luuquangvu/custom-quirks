@@ -16,8 +16,7 @@ from zhaquirks.const import (
 from zhaquirks.tuya import TuyaLocalCluster, TuyaManufCluster
 from zhaquirks.tuya.mcu import (
     DPToAttributeMapping,
-    TuyaMCUCluster,
-    TuyaPowerConfigurationCluster
+    TuyaMCUCluster
 )
 from zigpy.profiles import zha
 from zigpy.quirks import CustomDevice
@@ -35,7 +34,7 @@ class TuyaIlluminanceMeasurement(IlluminanceMeasurement, TuyaLocalCluster):
     """Tuya local IlluminanceMeasurement cluster."""
 
 
-class SensitivityLevel(t.enum8):
+class SensitivityLevel(t.uint8_t):
     """Sensitivity level enum."""
 
     LOW = 0x00
@@ -43,7 +42,7 @@ class SensitivityLevel(t.enum8):
     HIGH = 0x02
 
 
-class OnTimeValues(t.enum8):
+class OnTimeValues(t.uint8_t):
     """Sensitivity level enum."""
 
     _10_SEC = 0x00
@@ -64,7 +63,11 @@ class TuyaBatteryConfiguration(PowerConfigurationCluster, TuyaLocalCluster):
     }
 
 
+<<<<<<< HEAD
 class PirMotionManufCluster(TuyaManufCluster):
+=======
+class PirMotionManufCluster(TuyaMCUCluster):
+>>>>>>> 397e877 (update attributes)
     """Neo manufacturer cluster."""
 
     attributes = TuyaManufCluster.attributes.copy()
@@ -89,12 +92,20 @@ class PirMotionManufCluster(TuyaManufCluster):
             "battery_percentage_remaining",
         ),
         9: DPToAttributeMapping(
+<<<<<<< HEAD
             TuyaManufCluster.ep_attribute,
+=======
+            TuyaMCUCluster.ep_attribute,
+>>>>>>> 397e877 (update attributes)
             "current_zone_sensitivity_level",
             converter=lambda x: SensitivityLevel(x),
         ),
         10: DPToAttributeMapping(
+<<<<<<< HEAD
             TuyaManufCluster.ep_attribute,
+=======
+            TuyaMCUCluster.ep_attribute,
+>>>>>>> 397e877 (update attributes)
             "on_time",
             converter=lambda x: OnTimeValues(x),
         ),
@@ -148,8 +159,6 @@ class PirMotion(CustomDevice):
                     Basic.cluster_id,
                     TuyaBatteryConfiguration,
                     PirMotionManufCluster,
-                    TuyaOccupancySensing,
-                    TuyaIlluminanceMeasurement,
                 ],
                 OUTPUT_CLUSTERS: [
                     Time.cluster_id,
