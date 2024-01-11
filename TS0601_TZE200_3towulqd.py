@@ -13,7 +13,7 @@ from zhaquirks.const import (
     OUTPUT_CLUSTERS,
     PROFILE_ID,
 )
-from zhaquirks.tuya import TuyaLocalCluster
+from zhaquirks.tuya import TuyaLocalCluster, TuyaManufCluster
 from zhaquirks.tuya.mcu import (
     DPToAttributeMapping,
     TuyaMCUCluster,
@@ -52,10 +52,22 @@ class OnTimeValues(t.enum8):
     _120_SEC = 0x03
 
 
-class PirMotionManufCluster(TuyaMCUCluster):
+class TuyaBatteryConfiguration(PowerConfigurationCluster, TuyaLocalCluster):
+    """PowerConfiguration cluster for device"""
+
+    BATTERY_SIZES = 0x0031
+    BATTERY_QUANTITY = 0x0033
+
+    _CONSTANT_ATTRIBUTES = {
+        BATTERY_SIZES: 9,  # CR2450
+        BATTERY_QUANTITY: 1,
+    }
+
+
+class PirMotionManufCluster(TuyaManufCluster):
     """Neo manufacturer cluster."""
 
-    attributes = TuyaMCUCluster.attributes.copy()
+    attributes = TuyaManufCluster.attributes.copy()
     attributes.update({0xEF09: ("current_zone_sensitivity_level", SensitivityLevel)})
     attributes.update({0xEF0A: ("on_time", OnTimeValues)})
 
@@ -73,17 +85,17 @@ class PirMotionManufCluster(TuyaMCUCluster):
             converter=lambda x: IasZone.ZoneStatus.Alarm_1 if not x else 0,
         ),
         4: DPToAttributeMapping(
-            TuyaPowerConfigurationCluster.ep_attribute,
+            TuyaBatteryConfiguration.ep_attribute,
             "battery_percentage_remaining",
         ),
         9: DPToAttributeMapping(
-            TuyaMCUCluster.ep_attribute,
-            "sensitivity_level",
+            TuyaManufCluster.ep_attribute,
+            "current_zone_sensitivity_level",
             converter=lambda x: SensitivityLevel(x),
         ),
         10: DPToAttributeMapping(
-            TuyaMCUCluster.ep_attribute,
-            "keep_time",
+            TuyaManufCluster.ep_attribute,
+            "on_time",
             converter=lambda x: OnTimeValues(x),
         ),
         12: DPToAttributeMapping(
@@ -102,18 +114,6 @@ class PirMotionManufCluster(TuyaMCUCluster):
     }
 
 
-class TuyaBatteryConfiguration(PowerConfigurationCluster, TuyaLocalCluster):
-    """PowerConfiguration cluster for device"""
-
-    BATTERY_SIZES = 0x0031
-    BATTERY_QUANTITY = 0x0033
-
-    _CONSTANT_ATTRIBUTES = {
-        BATTERY_SIZES: 9,  # CR2450
-        BATTERY_QUANTITY: 1,
-    }
-
-
 class PirMotion(CustomDevice):
     """Tuya PIR motion sensor."""
 
@@ -121,7 +121,7 @@ class PirMotion(CustomDevice):
         MODELS_INFO: [("_TZE200_3towulqd", "TS0601")],
         ENDPOINTS: {
             # endpoints=1 profile=260 device_type=0x0402
-            # in_clusters=[0x0000, 0x0001, 0x0500],
+            # in_clusters=[0x0000, 0x0001, 0xef00, 0x0406, 0x0400],
             # out_clusters=[0x000a, 0x0019]
             1: {
                 PROFILE_ID: zha.PROFILE_ID,
@@ -129,7 +129,7 @@ class PirMotion(CustomDevice):
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
                     PowerConfiguration.cluster_id,
-                    IasZone.cluster_id,
+                    TuyaManufCluster.cluster_id,
                 ],
                 OUTPUT_CLUSTERS: [
                     Time.cluster_id,
