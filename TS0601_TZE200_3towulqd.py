@@ -56,8 +56,8 @@ class PirMotionManufCluster(TuyaMCUCluster):
     """Neo manufacturer cluster."""
 
     attributes = TuyaMCUCluster.attributes.copy()
-    attributes.update({0xEF09: ("sensitivity_level", SensitivityLevel)})
-    attributes.update({0xEF0A: ("keep_time", OnTimeValues)})
+    attributes.update({0xEF09: ("current_zone_sensitivity_level", SensitivityLevel)})
+    attributes.update({0xEF0A: ("on_time", OnTimeValues)})
 
     async def write_attributes(self, attributes, manufacturer=None):
         """Overwrite to force manufacturer code."""
