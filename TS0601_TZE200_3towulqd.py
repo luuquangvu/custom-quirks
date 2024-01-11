@@ -13,7 +13,7 @@ from zhaquirks.const import (
     OUTPUT_CLUSTERS,
     PROFILE_ID,
 )
-from zhaquirks.tuya import TuyaLocalCluster, TuyaManufCluster
+from zhaquirks.tuya import TuyaLocalCluster
 from zhaquirks.tuya.mcu import (
     DPToAttributeMapping,
     TuyaMCUCluster
@@ -63,14 +63,10 @@ class TuyaBatteryConfiguration(PowerConfigurationCluster, TuyaLocalCluster):
     }
 
 
-<<<<<<< HEAD
-class PirMotionManufCluster(TuyaManufCluster):
-=======
 class PirMotionManufCluster(TuyaMCUCluster):
->>>>>>> 397e877 (update attributes)
     """Neo manufacturer cluster."""
 
-    attributes = TuyaManufCluster.attributes.copy()
+    attributes = TuyaMCUCluster.attributes.copy()
     attributes.update({0xEF09: ("current_zone_sensitivity_level", SensitivityLevel)})
     attributes.update({0xEF0A: ("on_time", OnTimeValues)})
 
@@ -92,20 +88,12 @@ class PirMotionManufCluster(TuyaMCUCluster):
             "battery_percentage_remaining",
         ),
         9: DPToAttributeMapping(
-<<<<<<< HEAD
-            TuyaManufCluster.ep_attribute,
-=======
             TuyaMCUCluster.ep_attribute,
->>>>>>> 397e877 (update attributes)
             "current_zone_sensitivity_level",
             converter=lambda x: SensitivityLevel(x),
         ),
         10: DPToAttributeMapping(
-<<<<<<< HEAD
-            TuyaManufCluster.ep_attribute,
-=======
             TuyaMCUCluster.ep_attribute,
->>>>>>> 397e877 (update attributes)
             "on_time",
             converter=lambda x: OnTimeValues(x),
         ),
