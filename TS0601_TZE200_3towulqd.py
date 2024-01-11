@@ -3,8 +3,13 @@
 import math
 from typing import Dict
 
+from zigpy.profiles import zha
+from zigpy.quirks import CustomDevice
 import zigpy.types as t
-from zhaquirks import PowerConfigurationCluster
+from zigpy.zcl.clusters.general import Basic, Ota, Time
+from zigpy.zcl.clusters.measurement import IlluminanceMeasurement, OccupancySensing
+from zigpy.zcl.clusters.security import IasZone
+
 from zhaquirks.const import (
     DEVICE_TYPE,
     ENDPOINTS,
@@ -16,14 +21,9 @@ from zhaquirks.const import (
 from zhaquirks.tuya import TuyaLocalCluster
 from zhaquirks.tuya.mcu import (
     DPToAttributeMapping,
-    TuyaMCUCluster
+    TuyaMCUCluster,
+    TuyaPowerConfigurationCluster,
 )
-from zigpy.profiles import zha
-from zigpy.quirks import CustomDevice
-from zigpy.zcl import foundation
-from zigpy.zcl.clusters.general import Basic, Ota, Time, PowerConfiguration
-from zigpy.zcl.clusters.measurement import IlluminanceMeasurement, OccupancySensing
-from zigpy.zcl.clusters.security import IasZone
 
 
 class TuyaOccupancySensing(OccupancySensing, TuyaLocalCluster):
@@ -34,7 +34,7 @@ class TuyaIlluminanceMeasurement(IlluminanceMeasurement, TuyaLocalCluster):
     """Tuya local IlluminanceMeasurement cluster."""
 
 
-class SensitivityLevel(t.uint8_t):
+class SensitivityLevel(t.enum8):
     """Sensitivity level enum."""
 
     LOW = 0x00
@@ -42,7 +42,7 @@ class SensitivityLevel(t.uint8_t):
     HIGH = 0x02
 
 
-class OnTimeValues(t.uint8_t):
+class OnTimeValues(t.enum8):
     """Sensitivity level enum."""
 
     _10_SEC = 0x00
@@ -51,31 +51,12 @@ class OnTimeValues(t.uint8_t):
     _120_SEC = 0x03
 
 
-class TuyaBatteryConfiguration(PowerConfigurationCluster, TuyaLocalCluster):
-    """PowerConfiguration cluster for device"""
-
-    BATTERY_SIZES = 0x0031
-    BATTERY_QUANTITY = 0x0033
-
-    _CONSTANT_ATTRIBUTES = {
-        BATTERY_SIZES: 9,  # CR2450
-        BATTERY_QUANTITY: 1,
-    }
-
-
 class PirMotionManufCluster(TuyaMCUCluster):
     """Neo manufacturer cluster."""
 
     attributes = TuyaMCUCluster.attributes.copy()
-    attributes.update({0xEF09: ("current_zone_sensitivity_level", SensitivityLevel)})
-    attributes.update({0xEF0A: ("on_time", OnTimeValues)})
-
-    async def write_attributes(self, attributes, manufacturer=None):
-        """Overwrite to force manufacturer code."""
-
-        return await super().write_attributes(
-            attributes, manufacturer=foundation.ZCLHeader.NO_MANUFACTURER_ID
-        )
+    attributes.update({0xEF09: ("sensitivity_level", SensitivityLevel)})
+    attributes.update({0xEF0A: ("keep_time", OnTimeValues)})
 
     dp_to_attribute: Dict[int, DPToAttributeMapping] = {
         1: DPToAttributeMapping(
@@ -84,17 +65,17 @@ class PirMotionManufCluster(TuyaMCUCluster):
             converter=lambda x: IasZone.ZoneStatus.Alarm_1 if not x else 0,
         ),
         4: DPToAttributeMapping(
-            TuyaBatteryConfiguration.ep_attribute,
+            TuyaPowerConfigurationCluster.ep_attribute,
             "battery_percentage_remaining",
         ),
         9: DPToAttributeMapping(
             TuyaMCUCluster.ep_attribute,
-            "current_zone_sensitivity_level",
+            "sensitivity_level",
             converter=lambda x: SensitivityLevel(x),
         ),
         10: DPToAttributeMapping(
             TuyaMCUCluster.ep_attribute,
-            "on_time",
+            "keep_time",
             converter=lambda x: OnTimeValues(x),
         ),
         12: DPToAttributeMapping(
@@ -127,7 +108,7 @@ class PirMotion(CustomDevice):
                 DEVICE_TYPE: zha.DeviceType.IAS_ZONE,
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
-                    PowerConfiguration.cluster_id,
+                    TuyaPowerConfigurationCluster.cluster_id,
                     IasZone.cluster_id,
                 ],
                 OUTPUT_CLUSTERS: [
@@ -145,7 +126,7 @@ class PirMotion(CustomDevice):
                 DEVICE_TYPE: zha.DeviceType.IAS_ZONE,
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
-                    TuyaBatteryConfiguration,
+                    TuyaPowerConfigurationCluster,
                     PirMotionManufCluster,
                     TuyaOccupancySensing,
                     TuyaIlluminanceMeasurement,
