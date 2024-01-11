@@ -34,7 +34,7 @@ class TuyaIlluminanceMeasurement(IlluminanceMeasurement, TuyaLocalCluster):
     """Tuya local IlluminanceMeasurement cluster."""
 
 
-class SensitivityLevel(t.uint8_t):
+class SensitivityLevel(t.enum8):
     """Sensitivity level enum."""
 
     LOW = 0x00
@@ -42,23 +42,13 @@ class SensitivityLevel(t.uint8_t):
     HIGH = 0x02
 
 
-class OnTimeValues(t.uint8_t):
+class OnTimeValues(t.enum8):
     """Sensitivity level enum."""
 
     _10_SEC = 0x00
     _30_SEC = 0x01
     _60_SEC = 0x02
     _120_SEC = 0x03
-
-
-class TuyaBatteryConfiguration(TuyaPowerConfigurationCluster):
-    BATTERY_SIZES = 0x0031
-    BATTERY_QUANTITY = 0x0033
-
-    _CONSTANT_ATTRIBUTES = {
-        BATTERY_SIZES: 9,  # CR2450
-        BATTERY_QUANTITY: 1,
-    }
 
 
 class PirMotionManufCluster(TuyaMCUCluster):
@@ -75,7 +65,7 @@ class PirMotionManufCluster(TuyaMCUCluster):
             converter=lambda x: IasZone.ZoneStatus.Alarm_1 if not x else 0,
         ),
         4: DPToAttributeMapping(
-            TuyaBatteryConfiguration.ep_attribute,
+            TuyaPowerConfigurationCluster.ep_attribute,
             "battery_percentage_remaining",
         ),
         9: DPToAttributeMapping(
@@ -118,7 +108,7 @@ class PirMotion(CustomDevice):
                 DEVICE_TYPE: zha.DeviceType.IAS_ZONE,
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
-                    TuyaBatteryConfiguration.cluster_id,
+                    TuyaPowerConfigurationCluster.cluster_id,
                     IasZone.cluster_id,
                 ],
                 OUTPUT_CLUSTERS: [
@@ -136,7 +126,7 @@ class PirMotion(CustomDevice):
                 DEVICE_TYPE: zha.DeviceType.IAS_ZONE,
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
-                    TuyaBatteryConfiguration,
+                    TuyaPowerConfigurationCluster,
                     PirMotionManufCluster,
                     TuyaOccupancySensing,
                     TuyaIlluminanceMeasurement,
