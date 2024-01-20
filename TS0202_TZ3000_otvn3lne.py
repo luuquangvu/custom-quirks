@@ -24,6 +24,9 @@ from zigpy.zcl.clusters.general import (
 from zigpy.zcl.clusters.lightlink import LightLink
 from zigpy.zcl.clusters.security import IasZone
 
+CURRENT_ZONE_SENSITIVITY_LEVEL = 0x0013
+ON_TIME = 0xf001
+
 
 class SensitivityLevel(t.enum8):
     """Sensitivity level enum."""
@@ -46,8 +49,8 @@ class PirSensor(IasZone):
 
     attributes = IasZone.attributes.copy()
     # Wrap `current_zone_sensitivity_level` posible values
-    attributes.update({0x0013: ("current_zone_sensitivity_level", SensitivityLevel)})
-    attributes.update({0xf001: ("on_time", OnTimeValues)})
+    attributes.update({CURRENT_ZONE_SENSITIVITY_LEVEL: ("current_zone_sensitivity_level", SensitivityLevel)})
+    attributes.update({ON_TIME: ("on_time", OnTimeValues)})
 
 
 class TuyaBatteryConfiguration(PowerConfigurationCluster, TuyaLocalCluster):

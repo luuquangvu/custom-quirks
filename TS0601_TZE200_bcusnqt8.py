@@ -52,7 +52,6 @@ class ZemismartManufCluster(TuyaManufClusterAttributes):
 class ZemismartElectricalMeasurement(LocalDataCluster, Metering):
     """Custom class for total energy measurement."""
 
-    cluster_id = Metering.cluster_id
     CURRENT_DELIVERED_ID = 0x0000
     CURRENT_RECEIVED_ID = 0x0001
     POWER_WATT = 0x0000
@@ -75,8 +74,6 @@ class ZemismartElectricalMeasurement(LocalDataCluster, Metering):
 
 class ZemismartPowerMeasurement(LocalDataCluster, ElectricalMeasurement):
     """Custom class for power, voltage and current measurement."""
-
-    cluster_id = ElectricalMeasurement.cluster_id
 
     """Setting unit of measurement."""
     _CONSTANT_ATTRIBUTES = {
