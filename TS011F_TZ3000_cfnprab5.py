@@ -39,7 +39,7 @@ class Plug_4AC_2USB_cfnprab5(EnchantedDevice):
     """Tuya 4 outlet + 2 USB surge protector with restore power state support."""
 
     signature = {
-        MODEL: "TS011F",
+        MODELS_INFO: [("_TZ3000_cfnprab5", "TS011F")],
         ENDPOINTS: {
             # <SimpleDescriptor endpoint=1 profile=260 device_type=266
             # device_version=1
