@@ -4,12 +4,6 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from zigpy import types
-from zigpy.profiles import zha
-from zigpy.quirks import CustomDevice
-from zigpy.zcl.clusters.general import Basic, Identify, Ota, PowerConfiguration
-from zigpy.zcl.clusters.measurement import IlluminanceMeasurement, OccupancySensing
-
 from zhaquirks import Bus, LocalDataCluster
 from zhaquirks.const import (
     DEVICE_TYPE,
@@ -25,23 +19,18 @@ from zhaquirks.xiaomi import (
     OccupancyCluster,
     XiaomiAqaraE1Cluster,
     XiaomiPowerConfiguration,
+    XiaomiCustomDevice,
 )
+from zigpy.profiles import zha
+from zigpy.zcl.clusters.general import Basic, Identify, Ota, PowerConfiguration
+from zigpy.zcl.clusters.measurement import IlluminanceMeasurement, OccupancySensing
 
 MOTION_ATTRIBUTE = 274
-DETECTION_INTERVAL = 0x0102
-MOTION_SENSITIVITY = 0x010C
-TRIGGER_INDICATOR = 0x0152
 _LOGGER = logging.getLogger(__name__)
 
 
 class OppleCluster(XiaomiAqaraE1Cluster):
     """Opple cluster."""
-
-    attributes = {
-        DETECTION_INTERVAL: ("detection_interval", types.uint8_t, True),
-        MOTION_SENSITIVITY: ("motion_sensitivity", types.uint8_t, True),
-        TRIGGER_INDICATOR: ("trigger_indicator", types.uint8_t, True),
-    }
 
     def _update_attribute(self, attrid: int, value: Any) -> None:
         super()._update_attribute(attrid, value)
@@ -55,34 +44,6 @@ class OppleCluster(XiaomiAqaraE1Cluster):
                 OccupancySensing.Occupancy.Occupied,
             )
 
-    async def write_attributes(
-            self, attributes: dict[str | int, Any], manufacturer: int | None = None
-    ) -> list:
-        """Write attributes to device with internal 'attributes' validation."""
-        result = await super().write_attributes(attributes, manufacturer)
-        interval = attributes.get(
-            "detection_interval", attributes.get(DETECTION_INTERVAL)
-        )
-        _LOGGER.debug("detection interval: %s", interval)
-        if interval is not None:
-            self.endpoint.ias_zone.reset_s = int(interval)
-        return result
-
-
-class IlluminanceMeasurementClusterE1(LocalIlluminanceMeasurementCluster):
-    """Local illuminance measurement cluster that also discards more invalid values sent by this device."""
-
-    def _update_attribute(self, attrid, value):
-        if attrid == self.AttributeDefs.measured_value.id and (
-                value < 0 or value > 0xFFDC
-        ):
-            self.debug(
-                "Received invalid illuminance value: %s - setting illuminance to 0",
-                value,
-            )
-            value = 0
-        super()._update_attribute(attrid, value)
-
 
 class LocalOccupancyCluster(LocalDataCluster, OccupancyCluster):
     """Local occupancy cluster."""
@@ -94,7 +55,7 @@ class LocalMotionCluster(MotionCluster):
     reset_s: int = 60
 
 
-class LumiMotionACN001(CustomDevice):
+class LumiMotionACN001(XiaomiCustomDevice):
     """Lumi lumi.motion.acn001 (RTCGQ15LM) custom device implementation."""
 
     def __init__(self, *args, **kwargs):
@@ -135,7 +96,7 @@ class LumiMotionACN001(CustomDevice):
                     Identify.cluster_id,
                     LocalOccupancyCluster,
                     LocalMotionCluster,
-                    IlluminanceMeasurementClusterE1,
+                    LocalIlluminanceMeasurementCluster,
                     OppleCluster,
                 ],
                 OUTPUT_CLUSTERS: [
