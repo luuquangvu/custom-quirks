@@ -54,7 +54,7 @@ class LumiMotionACN001(CustomDevice):
 
     def __init__(self, *args, **kwargs):
         """Init."""
-        self.battery_size = 11
+        self.battery_size = 9
         self.battery_quantity = 1
         self.motion_bus = Bus()
         super().__init__(*args, **kwargs)
