@@ -69,7 +69,7 @@ class OppleCluster(XiaomiAqaraE1Cluster):
         return result
 
 
-class IlluminanceMeasurementClusterP1(LocalIlluminanceMeasurementCluster):
+class IlluminanceMeasurementClusterE1(LocalIlluminanceMeasurementCluster):
     """Local illuminance measurement cluster that also discards more invalid values sent by this device."""
 
     def _update_attribute(self, attrid, value):
@@ -109,7 +109,7 @@ class LumiMotionACN001(CustomDevice):
         ENDPOINTS: {
             1: {
                 PROFILE_ID: zha.PROFILE_ID,
-                DEVICE_TYPE: zha.DeviceType.OCCUPANCY_SENSOR,
+                DEVICE_TYPE: zha.DeviceType.IAS_ZONE,
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
                     PowerConfiguration.cluster_id,
@@ -128,14 +128,14 @@ class LumiMotionACN001(CustomDevice):
         ENDPOINTS: {
             1: {
                 PROFILE_ID: zha.PROFILE_ID,
-                DEVICE_TYPE: zha.DeviceType.OCCUPANCY_SENSOR,
+                DEVICE_TYPE: zha.DeviceType.IAS_ZONE,
                 INPUT_CLUSTERS: [
                     Basic.cluster_id,
                     XiaomiPowerConfiguration,
                     Identify.cluster_id,
                     LocalOccupancyCluster,
                     LocalMotionCluster,
-                    IlluminanceMeasurementClusterP1,
+                    IlluminanceMeasurementClusterE1,
                     OppleCluster,
                 ],
                 OUTPUT_CLUSTERS: [
